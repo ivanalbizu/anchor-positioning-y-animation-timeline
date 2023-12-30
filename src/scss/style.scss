@@ -1,0 +1,407 @@
+@layer reset, variables, menu, footer, dummy, animations.nav, animations.footer, animations.sticky;
+
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+@mixin breakpoint($size) {
+  @if map-has-key($breakpoints, $size) {
+    @media (min-width: #{map-get($breakpoints, $size)}) {
+      @content;
+    }
+  }
+}
+
+@layer reset {
+  *:where(:not(html, iframe, canvas, img, svg, video):not(svg *, symbol *)) {
+    all: unset;
+    display: revert;
+  }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  ul,
+  ol {
+    list-style-type: none;
+  }
+  button,
+  a {
+    cursor: pointer;
+    &:not([class]):focus {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+  }
+}
+
+@layer variables {
+  @property --nav-min-height {
+    initial-value: 80px;
+    inherits: true;
+    syntax: '<length>';
+  }
+  @property --footer-overlay-top {
+    initial-value: 100%;
+    inherits: true;
+    syntax: '<percentage>';
+  }
+  @property --observe-visibility {
+    initial-value: block;
+    inherits: true;
+    syntax: '<custom-ident>';
+  }
+  @property --detect-direction {
+    initial-value: 0deg;
+    inherits: true;
+    syntax: '<angle>';
+  }
+
+  :root {
+    --color-primary: #b31919;
+    --color-light: #fff;
+    --color-dark: #000;
+    --color-card-scroll-middle: #b22cff;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+  }
+}
+
+@layer menu {
+  .wrapper-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--color-primary);
+  }
+  .nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: var(--spacing-xs) var(--spacing-md);
+    padding: var(--spacing-sm) 0;
+    width: min(96%, #{map-get($breakpoints, xl)});
+    margin-inline: auto;
+    min-height: var(--nav-min-height);
+    color: var(--color-light);
+
+    &__logo {
+      text-align: center;
+      a {
+        display: inline-block;
+        @starting-style {
+          animation: jello-diagonal 0.8s both;
+        }
+      }
+    }
+
+    &__menu {
+      display: grid;
+      grid-auto-flow: row;
+      gap: var(--spacing-xs) var(--spacing-lg);
+      justify-content: center;
+    }
+
+    @include breakpoint(sm) {
+      &__menu {
+        grid-auto-flow: column;
+      }
+    }
+    @include breakpoint(md) {
+      grid-template-columns: 1fr auto;
+
+      &__logo {
+        text-align: left;
+      }
+      &__menu {
+        justify-content: flex-end;
+      }
+    }
+  }
+
+  .menu-item {
+    display: inline-block;
+    transition: translate 0.3s 0.1s, opacity 0.5s 0.1s;
+    &:nth-child(2) {
+      transition-delay: 0.3s;
+    }
+    &:nth-child(3) {
+      transition-delay: 0.5s;
+    }
+    &:nth-child(4) {
+      transition-delay: 0.7s;
+    }
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 calc(var(--spacing-sm) * -1);
+    }
+
+    a {
+      padding: var(--spacing-xs) 0;
+      display: block;
+    }
+  }
+}
+
+@layer footer {
+  .footer {
+    margin-top: 120px;
+    min-height: 60vh;
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    z-index: 1;
+    position: relative;
+    &::before {
+      content: '';
+      background-color: inherit;
+      position: fixed;
+      top: var(--footer-overlay-top);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: -1;
+    }
+
+    &-content {
+      display: grid;
+      grid-template-columns: 1fr;
+
+      gap: var(--spacing-xl);
+      padding: var(--spacing-xl) 0;
+      width: min(96%, #{map-get($breakpoints, xl)});
+      margin-inline: auto;
+
+      @include breakpoint(sm) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      span {
+        display: block;
+        &:first-of-type {
+          margin-bottom: var(--spacing-md);
+          padding-bottom: var(--spacing-xs);
+          border-bottom: 1px solid currentColor;
+        }
+      }
+    }
+  }
+}
+
+@layer dummy {
+  .main {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl) 0;
+    width: min(96%, #{map-get($breakpoints, xl)});
+    margin-inline: auto;
+  }
+  .card {
+    background-color: var(--color-light);
+    border: var(--spacing-sm) solid var(--color-card-scroll-middle);
+    border-radius: 5px;
+    padding: var(--spacing-sm);
+    width: 100%;
+    display: grid;
+    gap: var(--spacing-sm);
+    //filter: drop-shadow(1px 1px var(--spacing-xs) rgba(0, 0, 0, 0.2));
+
+    // Dummy card Placeholder
+    &__content:empty {
+      --color: rgb(199, 199, 199);
+      --width: 100%;
+      --width-line: 250px;
+      --height-rectangle: 150px;
+      --height-line: var(--spacing-lg);
+      --gutter: var(--spacing-sm);
+
+      --computed-circle-rad: calc(var(--height-line) * 0.5);
+      --computed-height: calc(
+        var(--height-rectangle) + var(--gutter) + var(--height-line) +
+          calc(1.5 * var(--gutter))
+      );
+      height: var(--computed-height);
+      background-image: linear-gradient(
+          0.9turn,
+          var(--color-light),
+          transparent
+        ),
+        linear-gradient(var(--color), var(--color)),
+        radial-gradient(
+          var(--height-line) circle at var(--computed-circle-rad)
+            var(--computed-circle-rad),
+          var(--color) 50%,
+          transparent 50%
+        ),
+        linear-gradient(var(--color), var(--color));
+      background-size: var(--width) var(--computed-height),
+        var(--width) var(--height-rectangle),
+        var(--height-line) var(--height-line),
+        var(--width-line) var(--height-line);
+      background-position: var(--width) 0, 0 0,
+        0px calc(var(--height-rectangle) + var(--gutter)),
+        calc(var(--height-line) + var(--gutter))
+          calc(var(--height-rectangle) + var(--gutter));
+      background-repeat: no-repeat;
+    }
+  }
+
+  .observe-visibility {
+    position: relative;
+    scroll-snap-margin-top: calc(50vh - 100px); //safari 11-14
+    scroll-margin-top: calc(50vh - 100px);
+    &::before {
+      content: 'Conditional Sticky';
+      position: absolute;
+      rotate: -30deg;
+      inset: 20px;
+      display: grid;
+      place-content: center;
+      font-size: 1.5rem;
+      text-align: center;
+      text-shadow: 2px 0 2px var(--color-light);
+    }
+  }
+
+  .link {
+    span {
+      display: inline-block;
+    }
+    .arrow {
+      rotate: var(--detect-direction);
+    }
+    :not([class]) {
+      border-bottom: 1px solid currentColor;
+      margin-right: var(--spacing-xs);
+    }
+  }
+}
+
+@layer animations {
+  @keyframes jello-diagonal {
+    0% {
+      transform: skew(0deg 0deg);
+    }
+    30% {
+      transform: skew(25deg 25deg);
+    }
+    40% {
+      transform: skew(-15deg, -15deg);
+    }
+    50% {
+      transform: skew(15deg, 15deg);
+    }
+    65% {
+      transform: skew(-5deg, -5deg);
+    }
+    75% {
+      transform: skew(5deg, 5deg);
+    }
+    100% {
+      transform: skew(0deg 0deg);
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    // START: Update height of NAV
+    @layer nav {
+      .nav {
+        animation: nav-height linear forwards;
+        animation-timeline: scroll(root);
+        animation-range: 100px;
+      }
+      @keyframes nav-height {
+        0% {
+          --nav-min-height: 80px;
+        }
+        5%,
+        100% {
+          --nav-min-height: 40px;
+        }
+      }
+    }
+    // END: Update height of NAV
+
+    // START: Full height overlay FOOTER
+    @layer footer {
+      .footer {
+        animation: footer-overlay linear forwards;
+        animation-timeline: view();
+        animation-range: entry 60%;
+      }
+      @keyframes footer-overlay {
+        0% {
+          --footer-overlay-top: 101%;
+        }
+        100% {
+          --footer-overlay-top: -1%;
+        }
+      }
+    }
+    // END: Full height overlay FOOTER
+
+    // START: conditional Sticky
+    @layer sticky {
+      .anchor {
+        anchor-name: --anchor;
+      }
+      .conditional-sticky {
+        position: fixed;
+        z-index: 1;
+        top: anchor(--anchor bottom);
+        left: anchor(--anchor left);
+        right: anchor(--anchor right);
+        background-color: rgba(0, 0, 0, 0.86);
+        color: var(--color-light);
+        font-size: 0.86rem;
+
+        &__inner {
+          display: flex;
+          justify-content: space-between;
+          gap: var(--spacing-lg);
+          width: min(96%, #{map-get($breakpoints, xl)});
+          margin-inline: auto;
+          padding-block: var(--spacing-xs);
+          .link {
+            flex-shrink: 0;
+          }
+        }
+        display: var(--observe-visibility);
+      }
+      .observe-visibility {
+        animation: observe-visibility linear, detect-direction linear forwards;
+        animation-timeline: view();
+        animation-range: cover 0%, exit;
+      }
+      @keyframes observe-visibility {
+        1%,
+        100% {
+          --observe-visibility: none;
+        }
+      }
+      @keyframes detect-direction {
+        to {
+          --detect-direction: 180deg;
+        }
+      }
+      // END: conditional Sticky
+    }
+  }
+}
